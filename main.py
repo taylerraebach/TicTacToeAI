@@ -243,8 +243,13 @@ while running:
 
         winResult = checkWin(listX, listO)
         winOrLose = winResult[0]
-        if (winOrLose == 'win'):
+        # if (winOrLose == 'win'):
             # draw win line
+
+        # see if board is full
+        if (len(listO) + len(listX) == 9):
+            playerTurn = False
+            AITurn = False
 
         pygame.display.update()
 
