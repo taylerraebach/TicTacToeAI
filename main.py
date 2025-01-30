@@ -119,8 +119,8 @@ def drawO(aiMove):
     text = font.render('O', True, BLACK)
 
     # Get the rectangle of the text and center it
-    location = squareLocation(aiMove)
-    text_rect = text.get_rect(center=location)
+    x, y = squareLocation(aiMove)
+    text_rect = text.get_rect(center=(x, y))
 
     # Draw the text on the screen
     screen.blit(text, text_rect)
@@ -132,7 +132,8 @@ def drawX(squareNum):
     text = font.render('X', True, BLACK)
 
     # Get the rectangle of the text and center it
-    text_rect = text.get_rect(center=(squareLocation(squareNum)))
+    x, y = squareLocation(squareNum)
+    text_rect = text.get_rect(center=(x, y))
 
     # Draw the text on the screen
     screen.blit(text, text_rect)
@@ -141,13 +142,60 @@ def drawX(squareNum):
 #-----------------------------------------------------------------------------------------------------------------------
 def AImoveDecision(listX, listO):
 
-    for i in range(len(listX)):
-        for j in range(len(listO)):
-            for k in range(7):
-                if((listX[i] != k) and (listO[j] != k)):
-                    return k
+    allSquares = [0,1,2,3,4,5,6,7,8]
+    availableSquares = [item for item in allSquares if item not in (listX + listO)]
+
+    nextMove = availableSquares.pop()
+    return nextMove
+
 
 #-----------------------------------------------------------------------------------------------------------------------
+def checkWin(listX, listO):
+    # deciding if a player has won
+    # board looks like:
+    # 0 1 2
+    # 3 4 5
+    # 6 7 8
+
+    if all(x in listX for x in [0, 1, 2]):
+        return ['win', 'x']
+    elif all(x in listX for x in [3, 4, 5]):
+        return ['win', 'x']
+    elif all(x in listX for x in [6, 7, 8]):
+        return ['win', 'x']
+    elif all(x in listX for x in [0, 3, 6]):
+        return ['win', 'x']
+    elif all(x in listX for x in [1, 4, 7]):
+        return ['win', 'x']
+    elif all(x in listX for x in [2, 5, 8]):
+        return ['win', 'x']
+    elif all(x in listX for x in [0, 4, 8]):
+        return ['win', 'x']
+    elif all(x in listX for x in [2, 4, 6]):
+        return ['win', 'x']
+
+    if all(o in listO for o in [0, 1, 2]):
+        return ['win', 'o']
+    elif all(o in listO for o in [3, 4, 5]):
+        return ['win', 'o']
+    elif all(o in listO for o in [6, 7, 8]):
+        return ['win', 'o']
+    elif all(o in listO for o in [0, 3, 6]):
+        return ['win', 'o']
+    elif all(o in listO for o in [1, 4, 7]):
+        return ['win', 'o']
+    elif all(o in listO for o in [2, 5, 8]):
+        return ['win', 'o']
+    elif all(o in listO for o in [0, 4, 8]):
+        return ['win', 'o']
+    elif all(o in listO for o in [2, 4, 6]):
+        return ['win', 'o']
+
+    return ['noWin']
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 
 # so the board is not created every loop
 boardCreated = False
@@ -167,34 +215,38 @@ while running:
         if event.type == pygame.QUIT:  # Check for window close event
             running = False
 
-    if (boardCreated == False):
-        # Fill the screen with white
-        screen.fill(WHITE)
-        # drawing game board lines
-        drawBoard()
-        boardCreated = True
+        if (boardCreated == False):
+            # Fill the screen with white
+            screen.fill(WHITE)
+            # drawing game board lines
+            drawBoard()
+            boardCreated = True
 
-    if (playerTurn):
-        # Detect mouse button clicks
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
-                x, y = event.pos  # Get the position of the mouse
+        if (playerTurn):
+            # Detect mouse button clicks
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    x, y = event.pos  # Get the position of the mouse
 
-            drawX(decideSquareNum(x, y))
-            listX.append(decideSquareNum(x, y))
-            playerTurn = False
-            AITurn = True
+                drawX(decideSquareNum(x, y))
+                listX.append(decideSquareNum(x, y))
+                playerTurn = False
+                AITurn = True
 
-    if (AITurn):
-        # decide move
-        aiMove = AImoveDecision(listX, listO)
-        drawO(aiMove)
-        listO.append(aiMove)
-        AITurn = False
-        playerTurn = True
+        elif (AITurn):
+            # decide move
+            aiMove = AImoveDecision(listX, listO)
+            drawO(aiMove)
+            listO.append(aiMove)
+            AITurn = False
+            playerTurn = True
 
+        winResult = checkWin(listX, listO)
+        winOrLose = winResult[0]
+        if (winOrLose == 'win'):
+            # draw win line
 
-    pygame.display.update()
+        pygame.display.update()
 
 # Quit Pygame
 pygame.quit()
