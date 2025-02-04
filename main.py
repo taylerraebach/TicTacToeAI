@@ -145,9 +145,95 @@ def AImoveDecision(listX, listO):
 
     allSquares = [0,1,2,3,4,5,6,7,8]
     availableSquares = [item for item in allSquares if item not in (listX + listO)]
+    nextMove = 'None'
 
-    nextMove = availableSquares.pop()
+    # if user has two next to each other anywhere, block the move
+    if len(listX) > 1:
+        nextMove = checkForTwo(listX, availableSquares)
+
+    if nextMove == 'None':
+        nextMove = availableSquares.pop()
+
     return nextMove
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+def checkForTwo(listX, availableSquares):
+    # if user has two next to each other anywhere, block the move
+    # board looks like:
+    # 0 1 2
+    # 3 4 5
+    # 6 7 8
+    if 0 in availableSquares:
+        if 1 and 2 in listX:
+            return 0
+        elif 3 and 6 in listX:
+            return 0
+        elif 4 and 8 in listX:
+            return 0
+
+    elif 1 in availableSquares:
+        if 0 and 2 in listX:
+            return 1
+        elif 4 and 7 in listX:
+            return 1
+
+    elif 2 in availableSquares:
+        if 0 and 1 in listX:
+            return 2
+        elif 5 and 8 in listX:
+            return 2
+        elif 4 and 6 in listX:
+            return 2
+
+    elif 3 in availableSquares:
+        if 0 and 6 in listX:
+            return 3
+        elif 4 and 5 in listX:
+            return 3
+
+    elif 4 in availableSquares:
+        if 0 and 8 in listX:
+            return 4
+        elif 2 and 6 in listX:
+            return 4
+        elif 3 and 5 in listX:
+            return 4
+        elif 1 and 7 in listX:
+            return 4
+
+    elif 5 in availableSquares:
+        if 2 and 8 in listX:
+            return 5
+        elif 3 and 4 in listX:
+            return 5
+
+    elif 6 in availableSquares:
+        if 0 and 3 in listX:
+            return 6
+        elif 7 and 8 in listX:
+            return 6
+        elif 2 and 4 in listX:
+            return 6
+
+    elif 7 in availableSquares:
+        if 1 and 4 in listX:
+            return 7
+        if 6 and 8 in listX:
+            return 7
+
+    elif 8 in availableSquares:
+        if 2 and 5 in listX:
+            return 8
+        elif 6 and 7 in listX:
+            return 8
+        elif 0 and 4 in listX:
+            return 8
+
+
+    else:
+        return 'None'
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -276,6 +362,8 @@ while running:
             winningPlayer = winResult[1]
             winningLine = winResult[2]
             drawWinLine(winningLine)
+            playerTurn = False
+            AITurn = False
 
         # see if board is full
         if (len(listO) + len(listX) == 9):
