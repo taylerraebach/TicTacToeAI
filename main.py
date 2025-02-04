@@ -8,6 +8,7 @@ pygame.font.init()
 WINDOW_SIZE = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (222, 15, 81)
 SHAPE_WIDTH = 10
 font = pygame.font.Font(None, 200)
 
@@ -158,40 +159,68 @@ def checkWin(listX, listO):
     # 6 7 8
 
     if all(x in listX for x in [0, 1, 2]):
-        return ['win', 'x']
+        return ['win', 'x', 'top']
     elif all(x in listX for x in [3, 4, 5]):
-        return ['win', 'x']
+        return ['win', 'x', 'middle']
     elif all(x in listX for x in [6, 7, 8]):
-        return ['win', 'x']
+        return ['win', 'x', 'bottom']
     elif all(x in listX for x in [0, 3, 6]):
-        return ['win', 'x']
+        return ['win', 'x', 'left']
     elif all(x in listX for x in [1, 4, 7]):
-        return ['win', 'x']
+        return ['win', 'x', 'center']
     elif all(x in listX for x in [2, 5, 8]):
-        return ['win', 'x']
+        return ['win', 'x', 'right']
     elif all(x in listX for x in [0, 4, 8]):
-        return ['win', 'x']
+        return ['win', 'x', 'leftToRight']
     elif all(x in listX for x in [2, 4, 6]):
-        return ['win', 'x']
+        return ['win', 'x', 'rightToLeft']
 
     if all(o in listO for o in [0, 1, 2]):
-        return ['win', 'o']
+        return ['win', 'o', 'top']
     elif all(o in listO for o in [3, 4, 5]):
-        return ['win', 'o']
+        return ['win', 'o', 'middle']
     elif all(o in listO for o in [6, 7, 8]):
-        return ['win', 'o']
+        return ['win', 'o', 'bottom']
     elif all(o in listO for o in [0, 3, 6]):
-        return ['win', 'o']
+        return ['win', 'o', 'left']
     elif all(o in listO for o in [1, 4, 7]):
-        return ['win', 'o']
+        return ['win', 'o', 'center']
     elif all(o in listO for o in [2, 5, 8]):
-        return ['win', 'o']
+        return ['win', 'o', 'right']
     elif all(o in listO for o in [0, 4, 8]):
-        return ['win', 'o']
+        return ['win', 'o', 'leftToRight']
     elif all(o in listO for o in [2, 4, 6]):
-        return ['win', 'o']
+        return ['win', 'o', 'rightToLeft']
 
     return ['noWin']
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+def drawWinLine(winningLine):
+
+    if winningLine == 'top':
+        pygame.draw.line(screen, RED, (0, WINDOW_SIZE / 6), (WINDOW_SIZE, WINDOW_SIZE / 6), SHAPE_WIDTH)
+
+    elif winningLine == 'middle':
+        pygame.draw.line(screen, RED, (0, WINDOW_SIZE / 2), (WINDOW_SIZE, WINDOW_SIZE / 2), SHAPE_WIDTH)
+
+    elif winningLine == 'bottom':
+        pygame.draw.line(screen, RED, (0, (WINDOW_SIZE / 6) * 5), (WINDOW_SIZE, (WINDOW_SIZE / 6) * 5), SHAPE_WIDTH)
+
+    elif winningLine == 'left':
+        pygame.draw.line(screen, RED, (WINDOW_SIZE / 6, 0), (WINDOW_SIZE / 6, WINDOW_SIZE), SHAPE_WIDTH)
+
+    elif winningLine == 'center':
+        pygame.draw.line(screen, RED, (WINDOW_SIZE / 2, 0), (WINDOW_SIZE / 2, WINDOW_SIZE), SHAPE_WIDTH)
+
+    elif winningLine == 'right':
+        pygame.draw.line(screen, RED, ((WINDOW_SIZE / 6) * 5, 0), ((WINDOW_SIZE / 6) * 5, WINDOW_SIZE), SHAPE_WIDTH)
+
+    elif winningLine == 'leftToRight':
+        pygame.draw.line(screen, RED, (0, 0), (WINDOW_SIZE, WINDOW_SIZE), SHAPE_WIDTH)
+
+    elif winningLine == 'rightToLeft':
+        pygame.draw.line(screen, RED, (0, WINDOW_SIZE), (WINDOW_SIZE, 0), SHAPE_WIDTH)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -243,8 +272,10 @@ while running:
 
         winResult = checkWin(listX, listO)
         winOrLose = winResult[0]
-        # if (winOrLose == 'win'):
-            # draw win line
+        if (winOrLose == 'win'):
+            winningPlayer = winResult[1]
+            winningLine = winResult[2]
+            drawWinLine(winningLine)
 
         # see if board is full
         if (len(listO) + len(listX) == 9):
