@@ -1,4 +1,5 @@
 import pygame  # Import Pygame
+import copy
 
 # Initialize Pygame and the font system
 pygame.init()
@@ -64,7 +65,7 @@ def squareLocation(squareNum):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-def decideSquareNum(x, y):
+def clickedSquare(x, y):
     # deciding based on click position, which square is it in
     # board looks like:
     # 0 1 2
@@ -115,12 +116,12 @@ def decideSquareNum(x, y):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-def drawO(aiMove):
+def drawO(squareNum):
     # Render the text (create a surface with the letter "X")
     text = font.render('O', True, BLACK)
 
     # Get the rectangle of the text and center it
-    x, y = squareLocation(aiMove)
+    x, y = squareLocation(squareNum)
     text_rect = text.get_rect(center=(x, y))
 
     # Draw the text on the screen
@@ -141,141 +142,109 @@ def drawX(squareNum):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-def AImoveDecision(listX, listO):
+def AImoveDecision(gameBoard):
 
-    allSquares = [0,1,2,3,4,5,6,7,8]
-    availableSquares = [item for item in allSquares if item not in (listX + listO)]
-    nextMove = 'None'
+    # checking if any ai move will lead to a win, and then blocking that move
+    for i in range(3):
+        for j in range(3):
+            if gameBoard[i][j] == 'e':
+                testGameBoard = copy.deepcopy(gameBoard)
+                testGameBoard[i][j] = 'o'
+                testWin = checkWin(testGameBoard)
+                if testWin[0] == 'win':
+                    row = i
+                    column = j
+                    squareNum = aiMoveNumber(row, column)
+                    return squareNum
 
-    # if user has two next to each other anywhere, block the move
-    if len(listX) > 1:
-        nextMove = checkForTwo(listX, availableSquares)
-
-    if nextMove == 'None':
-        nextMove = availableSquares.pop()
-
-    return nextMove
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-def checkForTwo(listX, availableSquares):
-    # if user has two next to each other anywhere, block the move
-    # board looks like:
-    # 0 1 2
-    # 3 4 5
-    # 6 7 8
-    if 0 in availableSquares:
-        if 1 and 2 in listX:
-            return 0
-        elif 3 and 6 in listX:
-            return 0
-        elif 4 and 8 in listX:
-            return 0
-
-    elif 1 in availableSquares:
-        if 0 and 2 in listX:
-            return 1
-        elif 4 and 7 in listX:
-            return 1
-
-    elif 2 in availableSquares:
-        if 0 and 1 in listX:
-            return 2
-        elif 5 and 8 in listX:
-            return 2
-        elif 4 and 6 in listX:
-            return 2
-
-    elif 3 in availableSquares:
-        if 0 and 6 in listX:
-            return 3
-        elif 4 and 5 in listX:
-            return 3
-
-    elif 4 in availableSquares:
-        if 0 and 8 in listX:
-            return 4
-        elif 2 and 6 in listX:
-            return 4
-        elif 3 and 5 in listX:
-            return 4
-        elif 1 and 7 in listX:
-            return 4
-
-    elif 5 in availableSquares:
-        if 2 and 8 in listX:
-            return 5
-        elif 3 and 4 in listX:
-            return 5
-
-    elif 6 in availableSquares:
-        if 0 and 3 in listX:
-            return 6
-        elif 7 and 8 in listX:
-            return 6
-        elif 2 and 4 in listX:
-            return 6
-
-    elif 7 in availableSquares:
-        if 1 and 4 in listX:
-            return 7
-        if 6 and 8 in listX:
-            return 7
-
-    elif 8 in availableSquares:
-        if 2 and 5 in listX:
-            return 8
-        elif 6 and 7 in listX:
-            return 8
-        elif 0 and 4 in listX:
-            return 8
+    # checking if any user move will lead to a win, and then blocking that move
+    for i in range(3):
+        for j in range(3):
+            if gameBoard[i][j] == 'e':
+                testGameBoard = copy.deepcopy(gameBoard)
+                testGameBoard[i][j] = 'x'
+                testWin = checkWin(testGameBoard)
+                if testWin[0] == 'win':
+                    row = i
+                    column = j
+                    squareNum = aiMoveNumber(row, column)
+                    return squareNum
 
 
-    else:
-        return 'None'
-
+    # if no move will lead to blocking a win, randomly place an o
+    for i in range(3):
+        for j in range(3):
+            if gameBoard[i][j] == 'e':
+                row = i
+                column = j
+                squareNum = aiMoveNumber(row, column)
+                return squareNum
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-def checkWin(listX, listO):
+def aiMoveNumber(row, column):
+
+    if row == 0:
+        if column == 0:
+            return 0
+        elif column == 1:
+            return 1
+        elif column == 2:
+            return 2
+
+    elif row == 1:
+        if column == 0:
+            return 3
+        elif column == 1:
+            return 4
+        elif column == 2:
+            return 5
+
+    elif row == 2:
+        if column == 0:
+            return 6
+        elif column == 1:
+            return 7
+        elif column == 2:
+            return 8
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+def checkWin(gameBoard):
     # deciding if a player has won
-    # board looks like:
-    # 0 1 2
-    # 3 4 5
-    # 6 7 8
 
-    if all(x in listX for x in [0, 1, 2]):
+    if (gameBoard[0][0] == 'x' and gameBoard[0][1] == 'x' and gameBoard[0][2]) == 'x':
         return ['win', 'x', 'top']
-    elif all(x in listX for x in [3, 4, 5]):
+    elif (gameBoard[1][0] == 'x' and gameBoard[1][1] == 'x' and gameBoard[1][2]) == 'x':
         return ['win', 'x', 'middle']
-    elif all(x in listX for x in [6, 7, 8]):
+    elif (gameBoard[2][0] == 'x' and gameBoard[2][1] == 'x' and gameBoard[2][2]) == 'x':
         return ['win', 'x', 'bottom']
-    elif all(x in listX for x in [0, 3, 6]):
+    elif (gameBoard[0][0] == 'x' and gameBoard[1][0] == 'x' and gameBoard[2][0]) == 'x':
         return ['win', 'x', 'left']
-    elif all(x in listX for x in [1, 4, 7]):
+    elif (gameBoard[0][1] == 'x' and gameBoard[1][1] == 'x' and gameBoard[2][1]) == 'x':
         return ['win', 'x', 'center']
-    elif all(x in listX for x in [2, 5, 8]):
+    elif (gameBoard[0][2] == 'x' and gameBoard[1][2] == 'x' and gameBoard[2][2]) == 'x':
         return ['win', 'x', 'right']
-    elif all(x in listX for x in [0, 4, 8]):
+    elif (gameBoard[0][0] == 'x' and gameBoard[1][1] == 'x' and gameBoard[2][2]) == 'x':
         return ['win', 'x', 'leftToRight']
-    elif all(x in listX for x in [2, 4, 6]):
+    elif (gameBoard[0][2] == 'x' and gameBoard[1][1] == 'x' and gameBoard[2][0]) == 'x':
         return ['win', 'x', 'rightToLeft']
 
-    if all(o in listO for o in [0, 1, 2]):
+    if (gameBoard[0][0] == 'o' and gameBoard[0][1] == 'o' and gameBoard[0][2]) == 'o':
         return ['win', 'o', 'top']
-    elif all(o in listO for o in [3, 4, 5]):
+    elif (gameBoard[1][0] == 'o' and gameBoard[1][1] == 'o' and gameBoard[1][2]) == 'o':
         return ['win', 'o', 'middle']
-    elif all(o in listO for o in [6, 7, 8]):
+    elif (gameBoard[2][0] == 'o' and gameBoard[2][1] == 'o' and gameBoard[2][2]) == 'o':
         return ['win', 'o', 'bottom']
-    elif all(o in listO for o in [0, 3, 6]):
+    elif (gameBoard[0][0] == 'o' and gameBoard[1][0] == 'o' and gameBoard[2][0]) == 'o':
         return ['win', 'o', 'left']
-    elif all(o in listO for o in [1, 4, 7]):
+    elif (gameBoard[0][1] == 'o' and gameBoard[1][1] == 'o' and gameBoard[2][1]) == 'o':
         return ['win', 'o', 'center']
-    elif all(o in listO for o in [2, 5, 8]):
+    elif (gameBoard[0][2] == 'o' and gameBoard[1][2] == 'o' and gameBoard[2][2]) == 'o':
         return ['win', 'o', 'right']
-    elif all(o in listO for o in [0, 4, 8]):
+    elif (gameBoard[0][0] == 'o' and gameBoard[1][1] == 'o' and gameBoard[2][2]) == 'o':
         return ['win', 'o', 'leftToRight']
-    elif all(o in listO for o in [2, 4, 6]):
+    elif (gameBoard[0][2] == 'o' and gameBoard[1][1] == 'o' and gameBoard[2][0]) == 'o':
         return ['win', 'o', 'rightToLeft']
 
     return ['noWin']
@@ -310,7 +279,29 @@ def drawWinLine(winningLine):
 
 
 #-----------------------------------------------------------------------------------------------------------------------
+def adjustBoard(gameBoard, squareNum, moveLetter):
 
+    if squareNum == 0:
+        gameBoard[0][0] = moveLetter
+    elif squareNum == 1:
+        gameBoard[0][1] = moveLetter
+    elif squareNum == 2:
+        gameBoard[0][2] = moveLetter
+    elif squareNum == 3:
+        gameBoard[1][0] = moveLetter
+    elif squareNum == 4:
+        gameBoard[1][1] = moveLetter
+    elif squareNum == 5:
+        gameBoard[1][2] = moveLetter
+    elif squareNum == 6:
+        gameBoard[2][0] = moveLetter
+    elif squareNum == 7:
+        gameBoard[2][1] = moveLetter
+    elif squareNum == 8:
+        gameBoard[2][2] = moveLetter
+
+
+#-----------------------------------------------------------------------------------------------------------------------
 
 # so the board is not created every loop
 boardCreated = False
@@ -319,9 +310,12 @@ boardCreated = False
 playerTurn = True
 AITurn = False
 
-# arrays that keep track of plays, entries are the squareNum
-listX = []
-listO = []
+# array for game board that stores moves
+gameBoard = [
+    ['e', 'e', 'e'],
+    ['e', 'e', 'e'],
+    ['e', 'e', 'e']
+]
 
 # Game loop
 running = True
@@ -343,20 +337,23 @@ while running:
                 if event.button == 1:  # Left mouse button
                     x, y = event.pos  # Get the position of the mouse
 
-                drawX(decideSquareNum(x, y))
-                listX.append(decideSquareNum(x, y))
+                moveLetter = 'x'
+                squareNum = clickedSquare(x, y)
+                drawX(squareNum)
+                adjustBoard(gameBoard, squareNum, moveLetter)
                 playerTurn = False
                 AITurn = True
 
         elif (AITurn):
             # decide move
-            aiMove = AImoveDecision(listX, listO)
-            drawO(aiMove)
-            listO.append(aiMove)
+            moveLetter = 'o'
+            squareNum = AImoveDecision(gameBoard)
+            drawO(squareNum)
+            adjustBoard(gameBoard, squareNum, moveLetter)
             AITurn = False
             playerTurn = True
 
-        winResult = checkWin(listX, listO)
+        winResult = checkWin(gameBoard)
         winOrLose = winResult[0]
         if (winOrLose == 'win'):
             winningPlayer = winResult[1]
@@ -366,7 +363,12 @@ while running:
             AITurn = False
 
         # see if board is full
-        if (len(listO) + len(listX) == 9):
+        emptySquares = 0
+        for i in range(3):
+            for j in range(3):
+                if gameBoard[i][j] == 'e':
+                    emptySquares += 1
+        if emptySquares == 0:
             playerTurn = False
             AITurn = False
 
