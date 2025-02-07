@@ -170,6 +170,15 @@ def AImoveDecision(gameBoard):
                     squareNum = aiMoveNumber(row, column)
                     return squareNum
 
+    # if no move will lead to blocking a win, first try to place an o in a corner
+    if gameBoard[0][0] == 'e':
+        return aiMoveNumber(0, 0)
+    elif gameBoard[0][2] == 'e':
+        return aiMoveNumber(0, 2)
+    elif gameBoard[2][0] == 'e':
+        return aiMoveNumber(2, 0)
+    elif gameBoard[2][2] == 'e':
+        return aiMoveNumber(2, 2)
 
     # if no move will lead to blocking a win, randomly place an o
     for i in range(3):
