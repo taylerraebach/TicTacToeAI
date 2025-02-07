@@ -144,7 +144,7 @@ def drawX(squareNum):
 #-----------------------------------------------------------------------------------------------------------------------
 def AImoveDecision(gameBoard):
 
-    # checking if any ai move will lead to a win, and then blocking that move
+    # checking if any ai move will lead to a win, and then doing that move
     for i in range(3):
         for j in range(3):
             if gameBoard[i][j] == 'e':
